@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EitrMagicExtended", "EitrMagicExtended.csproj", "{74DB0E1D-CAE4-4BBE-ADA5-BC95E2BB7415}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74DB0E1D-CAE4-4BBE-ADA5-BC95E2BB7415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DB0E1D-CAE4-4BBE-ADA5-BC95E2BB7415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DB0E1D-CAE4-4BBE-ADA5-BC95E2BB7415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74DB0E1D-CAE4-4BBE-ADA5-BC95E2BB7415}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C94651BB-9355-4E25-A063-B1C950A73292}
+	EndGlobalSection
+EndGlobal
