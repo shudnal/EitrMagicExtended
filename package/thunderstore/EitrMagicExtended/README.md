@@ -45,6 +45,12 @@ Value is configurable skill-wise.
 Default config means you will have 20 more base eitr for any skill with level 50 and 40 eitr for skill level 100.
 So maximum increase will be 80 eitr when both skills are 100.
 
+There is alternative way of gaining base eitr - non linear formula.
+
+This way you will have more eitr at low skill levels and less eitr on high skill level.
+
+Default formula is 3 * (skill ^ 0.5), 3 multiplied by skill factor raised to the power of 0.5 (square root).
+
 ## Misc settings
 
 Hide eitr numeric value shown on the bar.

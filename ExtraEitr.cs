@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System;
 using static ItemDrop;
+using UnityEngine;
 
 namespace EitrMagicExtended
 {
@@ -39,8 +40,19 @@ namespace EitrMagicExtended
             if (!baseEitr.Value)
                 return 0f;
 
-            return player.GetSkillFactor(Skills.SkillType.ElementalMagic) * elementalMagicBaseEitrIncrease.Value +
-                   player.GetSkillFactor(Skills.SkillType.BloodMagic) * bloodMagicBaseEitrIncrease.Value;
+            if (baseEitrNonLinear.Value)
+            {
+                return baseEitrBloodMagicCoefficient.Value * Mathf.Pow(GetSkillFactor(player, Skills.SkillType.BloodMagic) * 100f, baseEitrBloodMagicPower.Value) +
+                       baseEitrElementalMagicCoefficient.Value * Mathf.Pow(GetSkillFactor(player, Skills.SkillType.ElementalMagic) * 100f, baseEitrElementalMagicPower.Value);
+            }
+
+            return GetSkillFactor(player, Skills.SkillType.ElementalMagic) * elementalMagicBaseEitrIncrease.Value +
+                   GetSkillFactor(player, Skills.SkillType.BloodMagic) * bloodMagicBaseEitrIncrease.Value;
+        }
+
+        private static float GetSkillFactor(Player player, Skills.SkillType skillType)
+        {
+            return player.GetSkills().m_skillData.ContainsKey(skillType) ? player.GetSkillFactor(skillType) : 0f;
         }
 
         [HarmonyPatch(typeof(Player), nameof(Player.GetTotalFoodValue))]

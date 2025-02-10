@@ -14,7 +14,7 @@ namespace EitrMagicExtended
     {
         public const string pluginID = "shudnal.EitrMagicExtended";
         public const string pluginName = "Eitr Magic Extended";
-        public const string pluginVersion = "1.0.0";
+        public const string pluginVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -38,6 +38,12 @@ namespace EitrMagicExtended
         public static ConfigEntry<float> bloodMagicBaseEitrIncrease;
         public static ConfigEntry<float> baseEitrRegen;
         public static ConfigEntry<float> baseEitrRegenDelay;
+
+        public static ConfigEntry<bool> baseEitrNonLinear;
+        public static ConfigEntry<float> baseEitrElementalMagicPower;
+        public static ConfigEntry<float> baseEitrElementalMagicCoefficient;
+        public static ConfigEntry<float> baseEitrBloodMagicPower;
+        public static ConfigEntry<float> baseEitrBloodMagicCoefficient;
 
         public static ConfigEntry<bool> preventZeroDamageShieldSpam;
         public static ConfigEntry<bool> preventLookVectorConsoleSpam;
@@ -92,6 +98,12 @@ namespace EitrMagicExtended
             bloodMagicBaseEitrIncrease = config("4 - Base eitr", "Blood Magic", 40f, "Base eitr will be increased by set value when Blood Magic skill is level 100");
             baseEitrRegen = config("4 - Base eitr", "Base Regeneration rate", 2f, "Basic eitr regeneration rate per second.");
             baseEitrRegenDelay = config("4 - Base eitr", "Base Regeneration delay", 2f, "Delay amount before eitr regeneration starts.");
+
+            baseEitrNonLinear = config("4 - Base eitr - Non linear", "Enabled", false, "Base eitr will increase using function X * (skill ^ Y) \"X multiplied by skill raised to the power of Y\"");
+            baseEitrElementalMagicCoefficient = config("4 - Base eitr - Non linear", "Elemental Magic Coefficient", 3f, "X in formula");
+            baseEitrElementalMagicPower = config("4 - Base eitr - Non linear", "Elemental Magic Power", 0.5f, "Y in formula");
+            baseEitrBloodMagicCoefficient = config("4 - Base eitr - Non linear", "Blood Magic Coefficient", 3f, "X in formula");
+            baseEitrBloodMagicPower = config("4 - Base eitr - Non linear", "Blood Magic Power", 0.5f, "Y in formula");
 
             preventZeroDamageShieldSpam = config("5 - Shield", "Prevent zero damage hit effect", true, "If you take 0 damage shield not play hit effect. Could prevent occasional hit effect spam.");
             preventLookVectorConsoleSpam = config("5 - Shield", "Prevent Look Rotation Viewing Vector Is Zero console message", true, "If shield takes damage from an indirect hit this message will no longer be shown in log file or console.");
