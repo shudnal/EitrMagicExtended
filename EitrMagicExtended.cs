@@ -14,7 +14,7 @@ namespace EitrMagicExtended
     {
         public const string pluginID = "shudnal.EitrMagicExtended";
         public const string pluginName = "Eitr Magic Extended";
-        public const string pluginVersion = "1.0.1";
+        public const string pluginVersion = "1.0.2";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
