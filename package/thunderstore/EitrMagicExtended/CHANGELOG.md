@@ -1,3 +1,10 @@
+# 1.0.3
+* Updated for the Valheim 1.0.7 release.
+* Completed the migration to the standalone ConditionalConfigSync dependency.
+* Updated required dependencies to BepInExPack Valheim 5.4.2350 and ConditionalConfigSync 1.0.5.
+* Added explicit shield protection options for Ashlands lava, incinerators and drawbridges.
+* Fixed missing shield visuals preventing damage protection, and guarded absent shield renderers.
+
 # 1.0.2
 * patch 0.220.3
 * ServerSync updated

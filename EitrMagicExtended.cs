@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using ServerSync;
+using ConditionalConfigSync;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
@@ -10,11 +10,12 @@ using UnityEngine;
 namespace EitrMagicExtended
 {
     [BepInPlugin(pluginID, pluginName, pluginVersion)]
+    [BepInDependency("_shudnal.ConditionalConfigSync", "1.0.5")]
     public class EitrMagicExtended : BaseUnityPlugin
     {
         public const string pluginID = "shudnal.EitrMagicExtended";
         public const string pluginName = "Eitr Magic Extended";
-        public const string pluginVersion = "1.0.2";
+        public const string pluginVersion = "1.0.3";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -75,7 +76,6 @@ namespace EitrMagicExtended
 
         private void ConfigInit()
         {
-            config("1 - General", "NexusID", 2961, "Nexus mod ID for updates", false);
 
             configLocked = config("1 - General", "Lock Configuration", defaultValue: true, "Configuration is locked and can be changed by server admins only.");
             loggingEnabled = config("1 - General", "Logging enabled", false, "Enable logging. [Not Synced with Server]", false);
@@ -119,8 +119,7 @@ namespace EitrMagicExtended
         {
             ConfigEntry<T> configEntry = Config.Bind(group, name, defaultValue, description);
 
-            SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
-            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+            configSync.AddConfigEntry(configEntry, ConfigSyncMode.Conditional, serverControlledByDefault: synchronizedSetting);
 
             return configEntry;
         }
@@ -166,7 +165,7 @@ namespace EitrMagicExtended
                 var codes = new List<CodeInstruction>(instructions);
                 var multiplierField = typeof(Player_UpdateStats_EitrRegenMultiplier).GetField(nameof(s_eitrRegenTimeMultiplier));
 
-                for (int i = 0; i < codes.Count - 1; i++)
+                for (int i = 1; i < codes.Count; i++)
                 {
                     // Looking for m_eiterRegen after (1f - m_eitr / maxEitr) to add multiplier to m_eiterRegen next to it
                     if (codes[i].opcode == OpCodes.Mul && 

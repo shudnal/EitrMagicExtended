@@ -39,7 +39,10 @@ namespace EitrMagicExtended
             Catapult = 0x80000,
             CinderFire = 0x100000,
             AshlandsOcean = 0x200000,
-            All = 0x3FFFFF
+            AshlandsLava = 0x400000,
+            Incinerator = 0x800000,
+            DrawBridge = 0x1000000,
+            All = 0x1FFFFFF
         }
 
         private static bool IsFullProtected(HitData.HitType hitType)
@@ -73,6 +76,9 @@ namespace EitrMagicExtended
                 HitData.HitType.Catapult => HitType.Catapult,
                 HitData.HitType.CinderFire => HitType.CinderFire,
                 HitData.HitType.AshlandsOcean => HitType.AshlandsOcean,
+                HitData.HitType.AshlandsLava => HitType.AshlandsLava,
+                HitData.HitType.Incinerator => HitType.Incinerator,
+                HitData.HitType.DrawBridge => HitType.DrawBridge,
                 _ => HitType.All,
             };
         }
@@ -94,28 +100,38 @@ namespace EitrMagicExtended
 
             private static void Postfix(SE_Shield __instance, ref HitData hit)
             {
-                if (changeShieldColorByHealth.Value)
-                {
-                    if (__instance.m_totalAbsorbDamage == 0f || __instance.m_startEffectInstances.Length == 0 || __instance.m_startEffectInstances[0] == null)
-                        return;
-
-                    if (!s_shieldSpheres.TryGetValue(__instance, out MeshRenderer sphere))
-                    {
-                        sphere = __instance.m_startEffectInstances[0].transform.Find("Sphere").GetComponent<MeshRenderer>();
-                        s_shieldSpheres[__instance] = sphere;
-                    }
-
-                    sphere.GetPropertyBlock(s_matBlock);
-                    s_matBlock.SetColor(ShaderProps._Color, Color.Lerp(sphere.sharedMaterial.color, shieldTargetColorZeroHealth.Value, __instance.m_damage / __instance.m_totalAbsorbDamage));
-                    sphere.SetPropertyBlock(s_matBlock);
-                }
+                UpdateShieldColor(__instance);
 
                 if (IsFullProtected(hit.m_hitType) && hit.GetTotalDamage() > 0f)
                 {
-                    DamageText.instance.ShowText(__instance.m_character.GetDamageModifier(hit.m_damage.GetMajorityDamageType()), __instance.m_character.GetTopPoint(), hit.GetTotalDamage(), true);
+                    DamageText.instance?.ShowText(__instance.m_character.GetDamageModifier(hit.m_damage.GetMajorityDamageType()), __instance.m_character.GetTopPoint(), hit.GetTotalDamage(), true);
                     hit.m_damage.Modify(0f);
                 }
             }
+        }
+
+        private static void UpdateShieldColor(SE_Shield shield)
+        {
+            if (!changeShieldColorByHealth.Value || shield.m_totalAbsorbDamage <= 0f || shield.m_startEffectInstances == null ||
+                shield.m_startEffectInstances.Length == 0 || !shield.m_startEffectInstances[0])
+                return;
+
+            if (!s_shieldSpheres.TryGetValue(shield, out MeshRenderer sphere) || !sphere)
+            {
+                Transform sphereTransform = shield.m_startEffectInstances[0].transform.Find("Sphere");
+                sphere = sphereTransform ? sphereTransform.GetComponent<MeshRenderer>() : null;
+                if (!sphere)
+                    return;
+                s_shieldSpheres[shield] = sphere;
+            }
+
+            if (!sphere.sharedMaterial)
+                return;
+
+            sphere.GetPropertyBlock(s_matBlock);
+            s_matBlock.SetColor(ShaderProps._Color, Color.Lerp(sphere.sharedMaterial.color,
+                shieldTargetColorZeroHealth.Value, shield.m_damage / shield.m_totalAbsorbDamage));
+            sphere.SetPropertyBlock(s_matBlock);
         }
 
         [HarmonyPatch(typeof(SE_Shield), nameof(SE_Shield.IsDone))]
@@ -158,7 +174,7 @@ namespace EitrMagicExtended
             private static void Postfix()
             {
                 if (addShieldStaffSecondaryAttack.Value)
-                    PatchStaffShield(ObjectDB.instance.GetItemPrefab(itemDropStaffShieldName).GetComponent<ItemDrop>()?.m_itemData);
+                    PatchStaffShield(ObjectDB.instance?.GetItemPrefab(itemDropStaffShieldName)?.GetComponent<ItemDrop>()?.m_itemData);
             }
         }
 

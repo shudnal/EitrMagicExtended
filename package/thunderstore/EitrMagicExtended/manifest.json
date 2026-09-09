@@ -1,7 +1,10 @@
 {
   "name": "EitrMagicExtended",
-  "version_number": "1.0.2",
+  "version_number": "1.0.3",
   "website_url": "https://github.com/shudnal/EitrMagicExtended",
   "description": "Control various eitr aspects. Linear regeneration rate change, more regen from extra eitr or food, extra base eitr from skills. Magic shield tweaks.",
-  "dependencies": ["denikson-BepInExPack_Valheim-5.4.2202"]
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2350",
+    "shudnal-ConditionalConfigSync-1.0.5"
+  ]
 }

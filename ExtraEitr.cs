@@ -71,7 +71,7 @@ namespace EitrMagicExtended
             }
         }
 
-        [HarmonyPatch(typeof(ItemData), nameof(ItemData.GetTooltip), typeof(ItemData), typeof(int), typeof(bool), typeof(float), typeof(int))]
+        [HarmonyPatch(typeof(ItemData), nameof(ItemData.GetTooltip), typeof(ItemData), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(bool))]
         public static class ItemDrop_ItemData_GetTooltip_EitrRegenTooltipForFoodRegen
         {
             private static string[] tooltipTokens = new string[] { "$se_staminaregen", "$item_food_regen", "$item_food_duration", "$item_food_eitr" };
