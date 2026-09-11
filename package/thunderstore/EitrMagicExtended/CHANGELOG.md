@@ -1,3 +1,8 @@
+# 1.0.4
+* Reduced repeated regeneration getter calls and avoided unused maximum-eitr queries in food-only regeneration.
+* Scoped the regeneration curve multiplier to each call, including nested updates and exceptional exits.
+* Fixed extra regeneration tooltip text not being inserted before the following line.
+
 # 1.0.3
 * Updated for the Valheim 1.0.7 release.
 * Completed the migration to the standalone ConditionalConfigSync dependency.

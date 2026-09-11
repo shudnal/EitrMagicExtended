@@ -10,9 +10,11 @@ namespace EitrMagicExtended
     {
         public static float GetMultiplier(Player player)
         {
-            float maxEitr = player.GetMaxEitr();
+            float maxEitr;
             if (extraEitrRegenerationOnlyFood.Value)
                 player.GetTotalFoodValue(out _, out _, out maxEitr);
+            else
+                maxEitr = player.GetMaxEitr();
 
             return GetEitrRegenerationValueFromEitrPoints(maxEitr - GetAdditionalBaseEitr(player));
         }
@@ -101,7 +103,7 @@ namespace EitrMagicExtended
 
                 int i = __result.IndexOf("\n", index, StringComparison.InvariantCulture);
                 if (i != -1)
-                    __result.Insert(i, tooltip);
+                    __result = __result.Insert(i, tooltip);
                 else
                     __result += tooltip;
             }

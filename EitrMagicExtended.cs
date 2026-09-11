@@ -15,7 +15,7 @@ namespace EitrMagicExtended
     {
         public const string pluginID = "shudnal.EitrMagicExtended";
         public const string pluginName = "Eitr Magic Extended";
-        public const string pluginVersion = "1.0.3";
+        public const string pluginVersion = "1.0.4";
 
         private readonly Harmony harmony = new Harmony(pluginID);
 
@@ -59,11 +59,11 @@ namespace EitrMagicExtended
 
         private void Awake()
         {
-            harmony.PatchAll();
             instance = this;
 
             ConfigInit();
             _ = configSync.AddLockingConfigEntry(configLocked);
+            harmony.PatchAll();
 
             Game.isModded = true;
         }
@@ -181,8 +181,9 @@ namespace EitrMagicExtended
             }
 
             [HarmonyPriority(Priority.VeryLow)]
-            public static void Prefix(Player __instance)
+            public static void Prefix(Player __instance, out float? __state)
             {
+                __state = s_eitrRegenTimeMultiplier;
                 s_eitrRegenTimeMultiplier = 1f;
                 __instance.m_eitrRegenDelay = baseEitrRegenDelay.Value;
                 __instance.m_eiterRegen = baseEitrRegen.Value;
@@ -193,19 +194,37 @@ namespace EitrMagicExtended
                 if (extraEitrRegeneration.Value && extraEitrRegenerationPercent.Value > 0f && extraEitrRegenerationPoints.Value > 0)
                     __instance.m_eiterRegen *= 1f + ExtraEitr.GetMultiplier(__instance);
 
-                if (linearRegeneration.Value && 0f < linearRegenerationThreshold.Value && linearRegenerationThreshold.Value < 1f && linearRegenerationMultiplier.Value > 0f && __instance.GetMaxEitr() != 0f)
-                {
-                    if (__instance.GetEitrPercentage() < linearRegenerationThreshold.Value)
-                    {
-                        float t = Mathf.Clamp01(__instance.GetEitr() / (__instance.GetMaxEitr() * linearRegenerationThreshold.Value));
-                        s_eitrRegenTimeMultiplier = Mathf.Lerp(linearRegenerationMultiplier.Value, s_eitrRegenTimeMultiplier, t);
-                    }
-                    else if (__instance.GetEitrPercentage() > linearRegenerationThreshold.Value)
-                    {
-                        float t = Mathf.Clamp01((__instance.GetMaxEitr() - __instance.GetEitr()) / (__instance.GetMaxEitr() * (1f - linearRegenerationThreshold.Value)));
-                        s_eitrRegenTimeMultiplier = Mathf.Lerp(1 / linearRegenerationMultiplier.Value, s_eitrRegenTimeMultiplier, t);
-                    }
-                }
+                float threshold = linearRegenerationThreshold.Value;
+                float multiplier = linearRegenerationMultiplier.Value;
+                if (!linearRegeneration.Value || threshold <= 0f || threshold >= 1f || multiplier <= 0f)
+                    return;
+
+                // Preserve the public percentage hook used by other mods, but sample it once.
+                // Reuse the effective maximum/current values throughout the interpolation.
+                float maximum = __instance.GetMaxEitr();
+                if (maximum == 0f)
+                    return;
+
+                float percentage = __instance.GetEitrPercentage();
+                float current = __instance.GetEitr();
+                float fraction = current / maximum;
+                if (percentage < threshold)
+                    s_eitrRegenTimeMultiplier = Mathf.Lerp(multiplier, 1f, Mathf.Clamp01(fraction / threshold));
+                else if (percentage > threshold)
+                    s_eitrRegenTimeMultiplier = Mathf.Lerp(1f / multiplier, 1f, Mathf.Clamp01((1f - fraction) / (1f - threshold)));
+            }
+
+            // The transpiler consumes a scoped value. Nested updates and exceptions must
+            // restore the caller's value rather than leaking another player's multiplier.
+            private static void Postfix(ref float? __state) => Restore(ref __state);
+            private static void Finalizer(ref float? __state) => Restore(ref __state);
+
+            private static void Restore(ref float? state)
+            {
+                if (!state.HasValue)
+                    return;
+                s_eitrRegenTimeMultiplier = state.Value;
+                state = null;
             }
         }
     }
